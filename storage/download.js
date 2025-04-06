@@ -9,12 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var fs_1 = require("fs");
 var utils_1 = require("./utils");
 var args = process.argv.slice(2);
@@ -120,19 +120,29 @@ catch (err) {
 var storage = (0, utils_1.getStorageInstance)();
 function processBatch(fileSet, queryForNextPage) {
     return __awaiter(this, void 0, void 0, function () {
-        var file, err, err_1;
+        var file_1, err, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     if (!(fileSet.length > 0)) return [3 /*break*/, 5];
-                    file = fileSet.shift();
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);
-                    console.log('downloading: ', file.name);
+                    file_1 = fileSet.shift();
+                    if (file_1 == undefined)
+                        return [2 /*return*/];
+                    console.log('processing file: ', file_1.name);
                     return [4 /*yield*/, storage.bucket((0, utils_1.getBucketName)())
-                            .file(file.name)
-                            .download({ destination: "./".concat(folder, "/").concat(encodeURIComponent(file.name)) })];
+                            .file(file_1.name)
+                            .download({ destination: "./".concat(folder, "/").concat(encodeURIComponent(file_1.name)) })
+                            .then(function () {
+                            console.log('downloaded file: ', file_1.name);
+                            return [null];
+                        })
+                            .catch(function (err) {
+                            console.error('Error downloading file', err.toString());
+                            return err;
+                        })];
                 case 2:
                     err = (_a.sent())[0];
                     if (err) {
@@ -163,19 +173,19 @@ function processBatch(fileSet, queryForNextPage) {
     });
 }
 function getBatch(query) {
-    var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var fileSet, _b, files, queryForNextPage, c;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var fileSet, _a, files, queryForNextPage, c;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
+                    console.log("get batch: ", query);
                     fileSet = [];
                     return [4 /*yield*/, storage.bucket((0, utils_1.getBucketName)())
                             .getFiles(query)];
                 case 1:
-                    _b = _c.sent(), files = _b[0], queryForNextPage = _b[1];
+                    _a = _b.sent(), files = _a[0], queryForNextPage = _a[1];
                     c = 0;
-                    console.log('processing page: ', ((_a = queryForNextPage) === null || _a === void 0 ? void 0 : _a.pageToken) || '<starting page>');
+                    console.log('processing page: ', (queryForNextPage === null || queryForNextPage === void 0 ? void 0 : queryForNextPage.pageToken) || '<starting page>');
                     files.forEach(function (file) {
                         return __awaiter(this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
@@ -186,11 +196,14 @@ function getBatch(query) {
                                         fileSet.push(file);
                                     }
                                 }
+                                else {
+                                    console.log('skipping folder: ', file.name);
+                                }
                                 return [2 /*return*/];
                             });
                         });
                     });
-                    // console.log('prepared batch of ', fileSet.length, ' files')
+                    console.log('prepared batch of ', fileSet.length, ' files');
                     processBatch(fileSet, queryForNextPage);
                     return [2 /*return*/];
             }

@@ -1,6 +1,7 @@
 "use strict";
-exports.__esModule = true;
-exports.getStorageInstance = exports.getBucketName = void 0;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getBucketName = getBucketName;
+exports.getStorageInstance = getStorageInstance;
 var admin = require("firebase-admin");
 var serviceAccount = require("./firebase-service.json");
 try {
@@ -14,11 +15,9 @@ var storage = admin.storage();
 function getStorageInstance() {
     return storage;
 }
-exports.getStorageInstance = getStorageInstance;
 function getBucketName() {
     return "".concat(serviceAccount.project_id, ".appspot.com");
 }
-exports.getBucketName = getBucketName;
 function removeEmptyFields(obj) {
     Object.keys(obj).forEach(function (key) {
         if (obj[key] && typeof obj[key] === "object") {
