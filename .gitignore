@@ -5,6 +5,8 @@ node_modules/
 supabase-keys.ts
 supabase-keys.js
 supabase-service.json
+storage/downloads/
+.DS_Store
 __*
 fly.toml
 local.env.sh
