@@ -11,11 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^1.30.7",
-    "firebase-admin": "^10.0.2",
+    "firebase-admin": "^13.2.0",
     "firebase-scrypt": "^2.1.0",
     "moment": "^2.29.1",
     "pg": "^8.7.1",
-    "stream-json": "^1.7.3"
+    "stream-json": "^1.9.1"
   },
   "devDependencies": {
     "tsx": "^4.19.3"
